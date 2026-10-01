@@ -217,6 +217,7 @@ import { useRouter } from 'vue-router'
 import { authAPI } from '@/api/authAPI'
 import Message from '@/utils/message'
 import { useAuthStore } from '@/stores/auth'
+import { getRefundStatusText, type OrderStatus } from '@/utils/order'
 import sellerDefaultAvatar from '@/static/images/seller-avatar.jpg'
 
 // 事件定义
@@ -250,7 +251,7 @@ interface OrderItem {
   sellerAvatar?: string
 }
 
-type OrderStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED'
+// OrderStatus 类型（含 REFUNDING/REFUNDED）统一使用 @/utils/order 公共定义
 
 type PaymentMethod = 'ALIPAY' | 'WECHAT'
 
@@ -289,7 +290,9 @@ const statusClassMap: Record<OrderStatus, string> = {
   PROCESSING: 'status-paid',
   SHIPPED: 'status-shipped',
   COMPLETED: 'status-completed',
-  CANCELLED: 'status-cancelled'
+  CANCELLED: 'status-cancelled',
+  REFUNDING: 'status-refunding',
+  REFUNDED: 'status-refunded'
 }
 
 const statusTextMap: Record<OrderStatus, string> = {
@@ -298,7 +301,9 @@ const statusTextMap: Record<OrderStatus, string> = {
   PROCESSING: '待发货',
   SHIPPED: '待收货',
   COMPLETED: '已完成',
-  CANCELLED: '已取消'
+  CANCELLED: '已取消',
+  REFUNDING: '退款中',
+  REFUNDED: '已退款'
 }
 
 // ==================== 响应式数据 ====================
@@ -672,29 +677,7 @@ const getSellerAvatar = (orderWrapper: OrderWithItems): string => {
   return (orderWrapper as any).sellerAvatar || orderWrapper.orderItems[0]?.sellerAvatar || sellerDefaultAvatar
 }
 
-const getRefundStatusText = (status: string, refundType?: string, returnStatus?: string): string => {
-  if (status === 'FAILED') return '已拒绝'
-  if (status === 'SUCCESS') return '已退款'
-
-  if (refundType === 'AFTER_SALE' && status === 'PROCESSING') {
-    return '售后处理中'
-  }
-  if (returnStatus === 'RETURNING') {
-    return '退货中'
-  }
-  if (returnStatus === 'RECEIVED') {
-    return '已退款'
-  }
-
-  const statusMap: Record<string, string> = {
-    'PROCESSING': '处理中',
-    'WAITING_RETURN': '待退货',
-    'RETURNING': '退货中',
-    'SUCCESS': '已退款',
-    'FAILED': '已拒绝'
-  }
-  return statusMap[status] || status
-}
+// getRefundStatusText（退款/售后状态中文映射，含 REFUNDING 退款中）统一使用 @/utils/order 公共方法
 
 const formatPrice = (price: number): string => {
   if (price == null || isNaN(price)) {

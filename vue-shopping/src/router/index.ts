@@ -1,5 +1,6 @@
 // router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 // 导入模块路由
@@ -47,8 +48,29 @@ const router = createRouter({
 
 })
 
-router.beforeEach(async (to) => {
+// 用户端页面切换动画方向：slide-left 前进 / slide-right 后退 / fade 同级
+export const transitionName = ref('')
+
+// 仅 /user 之间的切换才应用滑动动画
+const isUserRoute = (path?: string) => !!path && path.startsWith('/user')
+
+router.beforeEach(async (to, from) => {
   const authStore = useAuthStore()
+
+  // 计算滑动方向（仅用户端 /user 之间切换才动画）
+  if (!isUserRoute(to.path) || !isUserRoute(from.path) || from.matched.length === 0) {
+    transitionName.value = '' // 初次进入或离开用户端，无动画
+  } else {
+    const toDepth = (to.meta.depth as number) ?? 1
+    const fromDepth = (from.meta.depth as number) ?? 1
+    if (toDepth > fromDepth) {
+      transitionName.value = 'slide-left'   // 进入更深层级 → 从右往左滑入
+    } else if (toDepth < fromDepth) {
+      transitionName.value = 'slide-right'  // 返回上层级 → 从左往右滑出
+    } else {
+      transitionName.value = 'fade'         // 同级切换 → 淡入淡出
+    }
+  }
 
   if (to.meta.requiresAuth) {
     if (!authStore.isLoggedIn || !authStore.userId) {

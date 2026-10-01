@@ -1,6 +1,27 @@
-2026-07-21 22:51:56.666 INFO  [MessageBroker-25] c.xiaoshan.springbootdemo.task.PackageExpireTask - 开始检测到期套餐（兜底检查）...
-2026-07-21 22:51:56.673 INFO  [MessageBroker-25] c.xiaoshan.springbootdemo.task.PackageExpireTask - 今日无到期套餐
-2026-07-21 22:51:56.678 INFO  [MessageBroker-27] c.x.springbootdemo.service.SellerPackageService - 更新了 1 个过期套餐
-2026-07-21 22:51:57.241 INFO  [XNIO-1 I/O-21] c.x.springbootdemo.config.WebSocketEventListener - WebSocket连接: userId=365331733250304
-2026-07-21 22:51:57.242 INFO  [XNIO-1 I/O-21] c.x.springbootdemo.config.WebSocketEventListener - 用户 365331733250304 在线状态已设置
-2026-07-21 22:51:58.367 WARN  [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7d14h3m53s98ms140µs500ns).
+2026-10-01 12:35:33.361 INFO  [main] com.xiaoshan.springbootdemo.SpringBootApplication - Starting SpringBootApplication using Java 21.0.7 with PID 29604 (D:\Python\Project\shopping-mobile\springboot-shopping\target\classes started by LiuQuanShan in D:\Python\Project\shopping-mobile\springboot-shopping)
+2026-10-01 12:35:33.372 INFO  [main] com.xiaoshan.springbootdemo.SpringBootApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-01 12:35:41.085 WARN  [main] io.undertow.websockets.jsr - UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used
+2026-10-01 12:35:41.124 INFO  [main] io.undertow.servlet - Initializing Spring embedded WebApplicationContext
+2026-10-01 12:35:42.315 INFO  [main] org.flywaydb.core.FlywayExecutor - Database: jdbc:mysql://localhost:3306/shopping-mobile?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true (MySQL 5.7)
+2026-10-01 12:35:42.328 INFO  [main] org.flywaydb.core.internal.database.base.Database - MySQL 5.7 is outside of Redgate community support. See https://rd.gt/468B6ni for details
+2026-10-01 12:35:42.406 INFO  [main] org.flywaydb.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.067s)
+2026-10-01 12:35:42.422 INFO  [main] org.flywaydb.core.internal.command.DbMigrate - Current version of schema `shopping-mobile`: 1
+2026-10-01 12:35:42.426 INFO  [main] org.flywaydb.core.internal.command.DbMigrate - Schema `shopping-mobile` is up to date. No migration necessary.
+2026-10-01 12:35:43.131 INFO  [main] c.x.s.handler.NotificationWebSocketHandler - OnlineStatusService 已初始化
+2026-10-01 12:35:43.132 INFO  [main] c.x.springbootdemo.config.WebSocketHandlerConfig - WebSocketHandlerConfig 已初始化，OnlineStatusService 已注入
+2026-10-01 12:35:44.629 WARN  [main] o.s.web.servlet.resource.ResourceHandlerUtils - Appended trailing slash to static resource location: file:D:\Python\Project\shopping-mobile\springboot-shopping\uploads\
+2026-10-01 12:35:44.659 WARN  [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 73d36d59-9b71-4d42-b2e1-2b3e363a2b56
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-01 12:35:45.436 INFO  [main] io.undertow - starting server: Undertow - 2.3.18.Final
+2026-10-01 12:35:45.446 INFO  [main] org.xnio - XNIO version 3.8.16.Final
+2026-10-01 12:35:45.458 INFO  [main] org.xnio.nio - XNIO NIO Implementation Version 3.8.16.Final
+2026-10-01 12:35:45.608 INFO  [main] org.jboss.threads - JBoss Threads version 3.5.0.Final
+2026-10-01 12:35:46.404 INFO  [main] com.xiaoshan.springbootdemo.SpringBootApplication - Started SpringBootApplication in 13.753 seconds (process running for 14.406)
+2026-10-01 12:35:46.411 INFO  [main] c.x.springbootdemo.component.StockInitializer - ========== 开始初始化 SKU 库存到 Redis ==========
+2026-10-01 12:35:47.032 INFO  [main] c.x.springbootdemo.component.StockInitializer - SKU 库存初始化完成，共 420 个 SKU
+2026-10-01 12:35:47.039 INFO  [main] c.x.springbootdemo.component.AdminInitializer - 管理员账号已存在，跳过初始化
+2026-10-01 12:49:16.143 INFO  [SpringApplicationShutdownHook] io.undertow - stopping server: Undertow - 2.3.18.Final

@@ -18,8 +18,8 @@
     <!-- 主内容区 -->
     <main class="main-content">
       <router-view v-slot="{ Component, route }">
-        <transition name="page-fade">
-          <keep-alive :include="['UserDashboard']">
+        <transition :name="transitionName" mode="out-in" @before-leave="lockScroll" @after-enter="unlockScroll">
+          <keep-alive :include="cachedViews">
             <component :is="Component" :key="route.fullPath" />
           </keep-alive>
         </transition>
@@ -27,7 +27,7 @@
     </main>
 
     <!-- 导航栏 -->
-    <div class="magic-tab-bar">
+    <div v-show="showTabbar" class="magic-tab-bar">
       <!-- 首页 -->
       <RouterLink :to="{name: 'UserDashboard'}" class="magic-tab-item" active-class="magic-active">
         <div class="magic-icon-wrap">
@@ -124,16 +124,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
 import { authAPI } from '@/api/authAPI'
 import Message from '@/utils/message'
+import { transitionName } from '@/router'
 
 const router = useRouter()
+const route = useRoute()
 const isInitialLoading = ref(true)
 const msgCount = ref<number>(0)
 const cartCount = ref(0)
 const showExtendMenu = ref(false)
+
+// 底部导航四页缓存（组件 name 与路由 name 一致）
+const cachedViews = ['UserDashboard', 'UserMessages', 'UserCenter', 'Cart']
+
+// 仅底部导航页（depth=1）显示 tabbar，独立子页与深层页隐藏
+const showTabbar = computed(() => (route.meta.depth as number) === 1)
+
+// 动画期间禁用页面滚动，防止卡顿
+const lockScroll = () => { document.body.style.overflow = 'hidden' }
+const unlockScroll = () => { document.body.style.overflow = '' }
 
 const handleExtendClick = () => {
   showExtendMenu.value = true
@@ -175,4 +187,58 @@ onMounted(() => {
 
 <style scoped>
 @import url('@/static/css/user/移动端布局');
+</style>
+
+<style>
+/* ============================================
+   用户端页面切换动画（全局，非 scoped）
+   三级 depth 体系：slide-left 前进 / slide-right 后退 / fade 同级
+   mode="out-in"：旧页离场后新页入场，避免同时渲染抖动。
+   GPU 加速：仅用 transform/opacity，配 will-change。
+   ============================================ */
+
+/* —— 前进：从右往左滑入（进入更深层级） —— */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to {
+  transform: translateX(-30%);
+  opacity: 0.6;
+}
+
+/* —— 后退：从左往右滑出（返回上层级） —— */
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-30%);
+  opacity: 0.6;
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+/* —— 同级切换：淡入淡出 —— */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

@@ -11,6 +11,8 @@
 body {
   background: #f5f5f5;
   min-height: 100vh;
+  /* 滑动动画时页面横向位移会溢出视口，此处裁剪横向滚动条 */
+  overflow-x: hidden;
 }
 
 /* 主容器 */
@@ -24,6 +26,8 @@ body {
 /* 主内容区 */
 .main-content {
   flex: 1;
+  /* 作为滑动动画新页（绝对定位）的定位上下文 */
+  position: relative;
   padding-bottom: 60px; /* 为底部导航栏预留空间 */
 }
 
@@ -306,19 +310,6 @@ body {
 .extend-menu-label {
   font-size: 13px;
   color: #333;
-}
-
-.page-fade-enter-active,
-.page-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.page-fade-enter-from {
-  opacity: 0;
-}
-
-.page-fade-leave-to {
-  opacity: 0;
 }
 
 

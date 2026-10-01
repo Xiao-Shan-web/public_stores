@@ -95,7 +95,7 @@
                       <div class="record-meta">
                         <span>{{ record.refundType === 'REFUND' ? '仅退款' : '退货退款' }}</span>
                         <span class="meta-divider">·</span>
-                        <span>{{ getRefundRecordStatusText(record.refundStatus, record.returnStatus) }}</span>
+                        <span>{{ getRefundStatusText(record.refundStatus, record.refundType, record.returnStatus) }}</span>
                       </div>
                       <div class="record-time">{{ formatDateTime(record.applyTime) }}</div>
                     </div>
@@ -128,6 +128,7 @@
   import { authAPI } from '@/api/authAPI'
   import Message from '@/utils/message'
   import SellerOrderList from './SellerOrderList.vue'
+  import { getRefundStatusText } from '@/utils/order'
 
   const router = useRouter()
 
@@ -287,20 +288,6 @@
     showRefundDialog.value = false
     router.push({ name: 'RefundChatStep', params: { refundId: String(selectedRefundId.value) } })
   }
-
-  const getRefundRecordStatusText = (status: string, returnStatus?: string): string => {
-  if (status === 'FAILED') return '已拒绝'
-  if (status === 'SUCCESS') return '已退款'
-  if (returnStatus === 'RETURNING') return '退货中'
-  if (returnStatus === 'RECEIVED') return '已退款'
-  const statusMap: Record<string, string> = {
-    PROCESSING: '处理中',
-    WAITING_RETURN: '待退货',
-    RETURNING: '退货中',
-    APPROVED: '已同意'
-  }
-  return statusMap[status] || status
-}
 
   const formatPrice = (price: number): string => {
     if (price == null) return '0.00'

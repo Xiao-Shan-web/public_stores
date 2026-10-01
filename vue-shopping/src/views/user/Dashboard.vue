@@ -198,6 +198,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'UserDashboard' })
+
 import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { authAPI } from '@/api/authAPI'

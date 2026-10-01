@@ -126,6 +126,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'UserCenter' })
+
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { authAPI } from '@/api/authAPI'

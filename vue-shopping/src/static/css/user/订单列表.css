@@ -220,6 +220,7 @@
 .status-delivered { color: #4f46e5; }
 .status-completed { color: #16a34a; }
 .status-cancelled { color: #dc2626; }
+.status-refunding { color: #d97706; }
 .status-refunded { color: #dc2626; }
 
 /* ========== 订单商品 ========== */

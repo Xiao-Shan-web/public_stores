@@ -268,7 +268,7 @@
                 <div class="record-meta">
                   <span>{{ record.refundType === 'REFUND' ? '仅退款' : '退货退款' }}</span>
                   <span class="meta-divider">·</span>
-                  <span>{{ getRefundStatusText(record.refundStatus, record.returnStatus) }}</span>
+                  <span>{{ getRefundStatusText(record.refundStatus, record.refundType, record.returnStatus) }}</span>
                 </div>
                 <div class="record-time">{{ formatDateTime(record.applyTime) }}</div>
               </div>
@@ -308,6 +308,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { authAPI } from '@/api/authAPI'
 import Message from '@/utils/message'
 import { useAuthStore } from '@/stores/auth'
+import { getRefundStatusText } from '@/utils/order'
 import ImagePreview from '@/components/ImagePreview.vue'
 import sellerDefaultAvatar from '@/static/images/seller-avatar.jpg'
 import defaultProductImage from '@/static/images/云杉购图标.jpg'
@@ -820,21 +821,8 @@ const confirmSelectRefund = (): void => {
 
 /**
  * 获取退款状态显示文字
+ * 统一使用 @/utils/order 的 getRefundStatusText，含 REFUNDING 退款中等全部映射。
  */
-const getRefundStatusText = (status: string, returnStatus?: string): string => {
-  if (status === 'FAILED') return '已拒绝'
-  if (status === 'SUCCESS') return '已退款'
-  if (status === 'COMPLETED') return '已退款'
-  if (returnStatus === 'RETURNING') return '退货中'
-  if (returnStatus === 'RECEIVED') return '已收货'
-  const statusMap: Record<string, string> = {
-    'PROCESSING': '处理中',
-    'WAITING_RETURN': '待退货',
-    'RETURNING': '退货中',
-    'APPROVED': '已同意'
-  }
-  return statusMap[status] || status
-}
 
 const previewProductImage = (items: OrderItem[], clickedImage: string): void => {
   previewMediaList.value = items.map(item => ({

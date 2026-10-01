@@ -101,6 +101,7 @@ import { useRouter } from 'vue-router'
 import { authAPI } from '@/api/authAPI'
 import Message from '@/utils/message'
 import { useAuthStore } from '@/stores/auth'
+import { getRefundStatusText } from '@/utils/order'
 import sellerDefaultAvatar from '@/static/images/seller-avatar.jpg'
 
 const emit = defineEmits(['update-tab-counts'])
@@ -276,26 +277,7 @@ const getSellerAvatar = (orderWrapper: OrderWithItems): string => {
   return (orderWrapper as any).sellerAvatar || orderWrapper.orderItems[0]?.sellerAvatar || sellerDefaultAvatar
 }
 
-const getRefundStatusText = (status: string, refundType?: string, returnStatus?: string): string => {
-  if (refundType === 'AFTER_SALE' && status === 'PROCESSING') {
-    return '售后处理中'
-  }
-  if (returnStatus === 'RETURNING') {
-    return '退货中'
-  }
-  if (returnStatus === 'RECEIVED') {
-    return '已退款'
-  }
-
-  const map: Record<string, string> = {
-    'PROCESSING': '处理中',
-    'WAITING_RETURN': '待退货',
-    'RETURNING': '退货中',
-    'SUCCESS': '已退款',
-    'FAILED': '已拒绝'
-  }
-  return map[status] || status
-}
+// getRefundStatusText（退款/售后状态中文映射，含 REFUNDING 退款中）统一使用 @/utils/order 公共方法
 
 const formatPrice = (price: number) => (price || 0).toFixed(2)
 

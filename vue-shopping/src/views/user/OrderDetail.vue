@@ -268,6 +268,7 @@
   import { authAPI } from '@/api/authAPI'
   import Message from '@/utils/message'
   import { useAuthStore } from '@/stores/auth'
+  import { getRefundStatusText, type OrderStatus } from '@/utils/order'
   import sellerDefaultAvatar from '@/static/images/seller-avatar.jpg'
   import defaultProductImage from '@/static/images/云杉购图标.jpg'
 
@@ -278,8 +279,7 @@
 
   // ==================== 类型定义 ====================
 
-  /** 订单状态枚举 */
-  type OrderStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED'
+  /** 订单状态枚举（含 REFUNDING/REFUNDED，定义见 @/utils/order） */
 
   /** 支付方式枚举 */
   type PaymentMethod = 'ALIPAY' | 'WECHAT'
@@ -463,7 +463,9 @@
     PROCESSING: 'status-paid',
     SHIPPED: 'status-shipped',
     COMPLETED: 'status-completed',
-    CANCELLED: 'status-cancelled'
+    CANCELLED: 'status-cancelled',
+    REFUNDING: 'status-refunding',
+    REFUNDED: 'status-refunded'
   }
 
   /** 订单状态图标映射 */
@@ -473,7 +475,9 @@
     PROCESSING: 'fas fa-spinner',
     SHIPPED: 'fas fa-truck',
     COMPLETED: 'fas fa-check-double',
-    CANCELLED: 'fas fa-times-circle'
+    CANCELLED: 'fas fa-times-circle',
+    REFUNDING: 'fas fa-rotate-left',
+    REFUNDED: 'fas fa-money-bill-wave'
   }
 
   /** 订单状态文字映射 */
@@ -483,7 +487,9 @@
     PROCESSING: '待发货',
     SHIPPED: '待收货',
     COMPLETED: '已完成',
-    CANCELLED: '已取消'
+    CANCELLED: '已取消',
+    REFUNDING: '退款中',
+    REFUNDED: '已退款'
   }
 
   /** 订单状态描述映射 */
@@ -493,7 +499,9 @@
     PROCESSING: '商家正在准备您的订单，请耐心等待',
     SHIPPED: '商品已发出，请留意物流信息',
     COMPLETED: '订单已完成，感谢您的购买',
-    CANCELLED: '订单已取消'
+    CANCELLED: '订单已取消',
+    REFUNDING: '退款申请处理中，请耐心等待',
+    REFUNDED: '订单已退款'
   }
 
   /** 支付方式映射 */
@@ -905,35 +913,12 @@
 
   /**
    * 获取退款状态显示文字（用户端）
+   * 统一使用 @/utils/order 的 getRefundStatusText，含 REFUNDING 退款中等全部映射。
    * @param {string} status - 退款状态
    * @param {string} refundType - 退款类型
    * @param {string} returnStatus - 退货状态
    * @returns {string} 显示文字
    */
-  const getRefundStatusText = (status: string, refundType?: string, returnStatus?: string): string => {
-    if (refundType === 'AFTER_SALE' && status === 'PROCESSING') {
-      return '售后处理中'
-    }
-    if (returnStatus === 'RETURNING') {
-      return '退货中'
-    }
-    if (returnStatus === 'RECEIVED') {
-      return '已退款'
-    }
-
-    if (status === 'FAILED') {
-      return '已拒绝'
-    }
-
-    const map: Record<string, string> = {
-      'PROCESSING': '处理中',
-      'WAITING_RETURN': '待退货',
-      'RETURNING': '退货中',
-      'SUCCESS': '已退款',
-      'FAILED': '已拒绝'
-    }
-    return map[status] || status
-  }
 
   /**
    * 获取退款状态样式类

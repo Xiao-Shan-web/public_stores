@@ -161,6 +161,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'UserMessages' })
+
 import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { authAPI } from '@/api/authAPI'

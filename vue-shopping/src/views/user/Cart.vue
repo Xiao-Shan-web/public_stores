@@ -199,6 +199,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'Cart' })
   // ========== 依赖导入 ==========
   import { ref, computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
