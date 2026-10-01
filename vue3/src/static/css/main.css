@@ -1,0 +1,152 @@
+/* ============================================
+   全局基础样式
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* 移除 iOS/Android 点击时的浏览器默认蓝色高亮 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 移除鼠标点击产生的 outline，保留键盘 Tab 可访问性 */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary, #ff6a00);
+  outline-offset: 2px;
+}
+
+/* 统一点击反馈：按钮/链接/图片/图标按钮/头像/列表项 按下时轻微降透明度，
+   反馈自然且不引起布局抖动；已有 transform: scale 的元素（如 .btn-primary）保留自身效果 */
+a,
+button,
+[role='button'],
+img,
+svg {
+  transition: opacity 0.15s ease;
+}
+
+a:active,
+button:active,
+[role='button']:active,
+img:active {
+  opacity: 0.85;
+}
+
+/* 禁用态不提供点击反馈 */
+button:disabled:active,
+a[aria-disabled='true']:active {
+  opacity: inherit;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+/* 通用页面容器 */
+.page-container {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* 卡片 */
+.card {
+  background-color: var(--color-bg-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+}
+
+/* 主按钮（橙色热血） */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  box-shadow: var(--shadow-active);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  background: var(--color-text-placeholder);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--color-text-placeholder);
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: var(--color-border);
+}
+
+/* Toast 轻提示 */
+.sanda-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  max-width: 80%;
+  padding: 10px 16px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.sanda-toast-hide {
+  opacity: 0;
+}

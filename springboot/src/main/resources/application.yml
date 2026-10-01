@@ -1,0 +1,254 @@
+# ============================================
+# 服务器配置
+# ============================================
+server:
+  # 服务端口号
+  port: 8089
+
+  # Tomcat 容器配置
+  tomcat:
+    # 最大并发连接数
+    max-connections: 1000
+    # 最大工作线程数
+    threads:
+      max: 200
+      min-spare: 10
+    # 请求体最大大小（字节，-1 表示不限制，由 multipart 配置控制）
+    max-swallow-size: -1
+
+  # HTTP 响应压缩
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 2048
+
+# ============================================
+# Spring Boot 核心配置
+# ============================================
+spring:
+  # 激活 dev 配置
+  profiles:
+    active: prod
+
+  # 应用名称
+  application:
+    name: fitness
+
+  # Jackson JSON 序列化（Spring Boot 4.x 使用 Jackson 3）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+  # Flyway 数据库版本管理
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
+    baseline-description: "Base migration"
+    repair-on-migrate: true
+    # 老库中已应用但 classpath 已合并删除的迁移（V2/V3），忽略校验
+    ignore-migration-patterns: "*:missing"
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      # 单个文件最大大小（100MB）
+      max-file-size: 100MB
+      # 整个请求最大大小（100MB）
+      max-request-size: 100MB
+      # 文件大小阈值（超过则写磁盘）
+      file-size-threshold: 2MB
+      # 临时文件目录
+      location: /tmp
+
+  # 异步任务线程池
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 50
+        queue-capacity: 200
+      thread-name-prefix: async-task-
+    scheduling:
+      pool:
+        size: 5
+      thread-name-prefix: scheduled-task-
+
+# ============================================
+# MyBatis 配置
+# ============================================
+mybatis:
+  # Mapper XML 文件位置
+  mapper-locations: classpath:mapper/*.xml
+  # 实体类别名包路径
+  type-aliases-package: com.xiaoshan.fitness.entity
+  configuration:
+    # 开启驼峰命名自动映射：user_name → userName
+    map-underscore-to-camel-case: true
+    # 日志实现
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    # 二级缓存（默认关闭）
+    cache-enabled: false
+    # 延迟加载
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    local-cache-scope: statement
+
+# ============================================
+# JWT 认证配置
+# ============================================
+jwt:
+  # JWT 密钥（至少 256 位，HS256 算法；用引号包裹避免 YAML 特殊字符解析问题）
+  # 生产环境必须通过环境变量 JWT_SECRET 注入独立强密钥（≥32 字节随机串）：
+  #   openssl rand -base64 48
+  # 未注入时沿用开发默认值，仅可用于本地/测试。
+  secret: "${JWT_SECRET:mySuperSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm1234567890!}"
+
+# ============================================
+# 日志配置
+# ============================================
+logging:
+  charset:
+    console: UTF-8
+  level:
+    com.xiaoshan.fitness: INFO
+    org.springframework: INFO
+    org.flywaydb: DEBUG
+    org.springframework.security: WARN
+    org.springframework.amqp: WARN
+    org.apache.ibatis: WARN
+    redis.clients: WARN
+    com.zaxxer.hikari: WARN
+  file:
+    name: logs/fitness.log
+    max-size: 100MB
+    max-history: 7
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n"
+
+# ============================================
+# 支付宝沙箱支付配置
+# 买家账号: cmdiaf2162@sandbox.com
+# 登录密码: 111111
+# 支付密码: 111111
+# ============================================
+alipay:
+  # 沙箱 APPID（上线切换正式开放平台应用时由环境变量覆盖）
+  app-id: ${ALIPAY_APP_ID:9021000162629440}
+  # 商家账号 PID
+  pid: ${ALIPAY_PID:2088721098715691}
+  # 支付宝网关（沙箱）；正式环境：https://openapi.alipay.com/gateway.do
+  gateway-url: ${ALIPAY_GATEWAY:https://openapi-sandbox.dl.alipaydev.com/gateway.do}
+  # 应用私钥（RSA2）：生产必须通过 ALIPAY_PRIVATE_KEY 注入，勿提交真实密钥
+  private-key: "${ALIPAY_PRIVATE_KEY:MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCV/lyQEkZpqMM8Plk0d6rXD+NiHKjQsC+ppFyIRd9uOFfuKjrmICyzXzPoZYAJ/Nbt0JmEk6RuH//K8JO5jKangAF/6txbR/0dTRwId4jv+/EyupXPXnzZA+D20zNDJOBOST2mOcdXExfzZnQOP9K0fIFXv7A0AIPVCaClmDXAzudKAyjYHbIgRO0binOeyYySuigUy9dTbLkrjNrReJICqo+NCjLeHQqYf7JRBapJeikQawGqWSAQ0H3W7hu4y+4zd1ZTjDU0+Kk2eLFgSJppRq1NygQNhXcTZx8diPGsBPYGZsOTM0VH3XKQLglwBNdKIyeDM8WksjbsFW39eDjZAgMBAAECggEALmHr6bldAMtpJDX7i9f9gmetXueR5Ia3FnR3EMTapNDTkBiLAiKs8ALeoFzSzUPcisnYz0CAtnU6ulzOsbAm0OEqlY3g+nE2elsf8hZUyDFWkuNT9D45yToD1Q/WaEr8+fh4EfEIDYsf+uqRtN5Tn/BoZuQl7s7B9Zz2in6ZELfwwvpoNRDeswCT8ENnvrWXT1VISeJ/22BVqAl8SSVGZvM2U6gQhtG0C+EZv0UJVdlqW6C1lYb9Hl2EvGiG1z7hRM+GvFZeU0SysY0xKvKoWLdJDfOCCo4ftuezENo22KfRCFnx42siUD1UH6c6gI9gJJOc/kgL+8MPSKXa1IskiQKBgQDZR4/lgftv0yB2KfkqUgdHCJBfdzjtT1jEmKKlUPj4SXplx9Au/R8EKBIM5vwB5/AM71IJdXKB53Z9i+dgJ5ntpYAindrKaHI17BygsB17FKJOI/vHJXqywOK+EhLOUyJw/J0puvkV6vWE31HaKhRmgCvr7+cOfkrGjBDS3yTglwKBgQCwuSt/ko06zK8m7ASKYOCdCuAxxlcKrw/s45GAx9l4X0DSPrdY9PKrsjn8azCh5vlyFucVSFJV1sFrAlNrGq97XeDS5lzgISWJxbMqlPyR3DaaQ/JdkmuZsGFWmpDYjggqvhwIyW9YBUUMBUAALw01FznicgOMLaq6oS9IjPtwDwKBgC2LE31u7m41GePKzoBxazcXc3OfQN51OE0VFVqDi3w3oqE87cU7p0muwIHV1NLtc+KyM0bqSFM0WiDct2XvRxOKEj6vSdINbIsi76k64SMQYyjv3/GRSJO5XI2sqiZ3RIvcV3EM0PMoKchtKvIIyffmO86bnZnrHO9bIpeg0FEHAoGBAKW+5dcegir1sgiVL6UBO2jOvHqyhQxWKF+LB/p6dbJ50/fcLmXWRotV+yCM/+25DZc9d7n0PJSZeIp+gfJf8tmHsMbcm5ryO5y9uU5ksYWzvdptg7DTFOvuCz0IdnVEsNA1wWFUW4N4XcvqWJ5TgtWaVQXW3RDp+8hSSGCJKYFtAoGAJXHo0BLZklqL1nwOfTtQdevQsJxKyQKq1pzUvke5/7tOnuszyLATa3lhak0y7oRK3ioMmInmjQQiEh538PPB94UyJ0wf2/iuNe0NINNScrHu1zk6K1FN0eW0bkL1CtQhy8uy3T4bK8D3WllSwXDRk0cp7jTCIoEPDky802eFbEE=}"
+  # 支付宝公钥：生产通过 ALIPAY_PUBLIC_KEY 注入
+  alipay-public-key: "${ALIPAY_PUBLIC_KEY:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnYJmw0mjl6h4nXH/7a6wezMMp7x0oVDaf9lD1tC3MFZ/fbZDbU0SHiUw1hkTilYSQRLQx+/f8yqbspSj/l4X69Ic4SQXRd4L31XABgvmiTYY5G6fe14BEIfA0bPpYowumeOSDrB4Vx7CrPvm/Yrjk4N8C5+U7AnLT8+bhJtwb+q/8TMG/EdP7wh1YVBZMLYQQBYZ+28up0ozhN75/Nov1Bq0cUqssDrXA8OEXa2BFg82XYLQZnFSiRXKQbjv+yz61Ivke+s0CWASFuqo0aMUj/mUxIT80Lis8Hhsm2Fc4hV3ooJeVoPCVmZxMndYwDnqYTdyrFegdC9hGzHHvKwDcQIDAQAB}"
+  # 支付结果异步通知：必须是支付宝服务器可达的公网 HTTPS 地址。
+  # 生产设置 ALIPAY_NOTIFY_URL=https://你的域名/api/v1/pay/alipay/notify
+#  notify-url: ${ALIPAY_NOTIFY_URL:http://fda8a849.natappfree.cc/api/v1/pay/alipay/notify}
+  notify-url: ${ALIPAY_NOTIFY_URL:http://62.234.79.156/api/v1/pay/alipay/notify}
+  # 支付完成前端跳转页：生产设置 ALIPAY_RETURN_URL=https://你的域名/user/pay-result
+#  return-url: ${ALIPAY_RETURN_URL:http://localhost:5174/user/pay-result}
+  return-url: ${ALIPAY_RETURN_URL:http://62.234.79.156/user/pay-result}
+  # 退款结果通知回调
+  refund-notify-url: /api/v1/refund/callback
+
+# ============================================
+# 支付模式
+# mock  - 开发环境直接模拟支付成功（默认）
+# alipay - 真实支付宝沙箱支付（需 app.pay.mode=alipay）
+# ============================================
+app:
+  pay:
+    # PAY_MODE=mock 可在生产临时切模拟支付（联调/降级），默认 alipay
+    mode: ${PAY_MODE:alipay}
+  file:
+    # 文件上传根目录
+    upload-dir: uploads
+  share:
+    # ffmpeg 可执行文件路径（视频转码）：缺省在 PATH 中查找；
+    # 未安装时视频按原样播放（mp4 可直接播），安装后重启即启用转码
+    ffmpeg-path: ffmpeg
+
+# ============================================
+# 人脸识别配置
+# mock     - 本地图片哈希比对（默认，无需密钥，dev 兜底）
+# baidu    - 百度智能云人脸识别 V3（真实人脸注册/搜索，需密钥）
+# smartjava - SmartJavaAI 离线人脸识别（DJL 自动下载模型，SQLite 人脸库）
+# ============================================
+face:
+  mode: mock
+  smartjava:
+    similarity-threshold: 0.62
+    model-cache-path: data/ai-models
+  baidu:
+    api-key: ${BAIDU_FACE_API_KEY:}
+    secret-key: ${BAIDU_FACE_SECRET_KEY:}
+    # 人脸库分组 ID（首次注册自动创建）
+    group-id: fitness_users
+    # 搜索相似度阈值（0-100），默认 80
+    score-threshold: 80
+    # 图片质量/活体控制：NONE / LOW / NORMAL / HIGH
+    quality-control: NORMAL
+    liveness-control: NORMAL
+    connect-timeout-ms: 3000
+    read-timeout-ms: 10000
+
+# ============================================
+# 业务配置
+# ============================================
+business:
+  # 会员卡配置
+  membership:
+    # 到期前提醒天数
+    expire-remind-days: 7
+  # 安全配置
+  security:
+    # 登录失败锁定时间（分钟）
+    login-lock-minutes: 15
+    # 最大登录失败次数
+    max-login-attempts: 5
+
+# ============================================
+# 关键通知短信
+# enabled       - 总开关（false 时不发送也不留痕）
+# channel       - log：日志通道（默认，开发/无凭证环境直接在日志与 sms_records 演示）
+#                 aliyun：阿里云短信（需配置 AK 与已审核签名/模板，未配齐自动降级 log）
+# rate-limit    - 同一用户同一模板的最小间隔（秒），防重复触发/骚扰
+# ============================================
+sms:
+  # SMS_ENABLED=false 时不发送也不留痕（应急关停开关）
+  enabled: ${SMS_ENABLED:true}
+  channel: log
+  rate-limit-seconds: 60
+  aliyun:
+    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:}
+    sign-name: 山达健身
+
+# ============================================
+# AI 能力（百度千帆大模型）
+# ai.chat.provider：饮食对话实现
+#   mock    - 本地规则私教（默认，无需密钥，开箱即用）
+#   qianfan - 千帆真实大模型（需配置 AK/SK，未配置时饮食对话自动保持 mock）
+# ai.qianfan.enabled：训练计划生成 / 智能客服是否启用千帆增强
+#   false 时训练用本地动作库、客服用 FAQ+转人工，均不依赖外部模型
+# 密钥通过环境变量注入，不要写死在仓库中
+# ============================================
+ai:
+  chat:
+    provider: ${AI_CHAT_PROVIDER:mock}
+  qianfan:
+    enabled: ${QIANFAN_ENABLED:false}
+    access-key-id: ${QIANFAN_ACCESS_KEY_ID:}
+    secret-access-key: ${QIANFAN_SECRET_ACCESS_KEY:}
+    # 免费/低速模型降低开通门槛；可换 ernie-4.5-turbo-128k 等
+    model: ${QIANFAN_MODEL:ernie-speed-128k}
+    base-url: https://qianfan.baidubce.com
+    token-url: https://aip.baidubce.com/oauth/2.0/token
+    connect-timeout-ms: 3000
+    read-timeout-ms: 20000
+    temperature: 0.7

@@ -1,0 +1,52 @@
+/* ============================================
+   山达健身 主题变量
+   主题：青春、活跃、热血、激情
+   主色：橙 #FF6B35 + 深灰 #1A1A2E + 白
+   ============================================ */
+:root {
+  /* 主色 */
+  --color-primary: #ff6b35;
+  --color-primary-light: #ff8559;
+  --color-primary-dark: #e54b1a;
+  --color-dark: #1a1a2e;
+  --color-dark-2: #16213e;
+  --color-white: #ffffff;
+
+  /* 渐变（热血感） */
+  --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ff3d6e 100%);
+  --gradient-dark: linear-gradient(160deg, #1a1a2e 0%, #16213e 100%);
+
+  /* 功能色 */
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-danger: #ff4d4f;
+  --color-info: #8c8c8c;
+
+  /* 中性色 */
+  --color-text: #1a1a2e;
+  --color-text-secondary: #595959;
+  --color-text-placeholder: #bfbfbf;
+  --color-border: #f0f0f0;
+  --color-bg: #f7f8fa;
+  --color-bg-white: #ffffff;
+  --color-bg-gray: #f5f5f5;
+
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* 底部导航高度 */
+  --tabbar-height: 60px;
+
+  /* 阴影 */
+  --shadow-card: 0 4px 20px rgba(255, 107, 53, 0.08);
+  --shadow-active: 0 8px 24px rgba(255, 107, 53, 0.25);
+}

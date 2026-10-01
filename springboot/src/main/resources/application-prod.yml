@@ -1,0 +1,117 @@
+# ============================================
+# 生产环境配置（prod profile）
+# 所有连接信息与密钥均支持环境变量覆盖：
+#   未设置环境变量时使用下方默认值（与开发库一致，便于裸机启动）；
+# 正式部署时在 fitness.env 中注入强密码/密钥，勿将真实 .env 提交仓库。
+# ============================================
+# 服务器配置（prod）
+# 端口只绑定回环地址：公网只能通过 Nginx（80/443）访问，8089 不对外暴露
+# ============================================
+server:
+  address: 0.0.0.0
+
+spring:
+  # ========== 数据源配置 ==========
+  datasource:
+    # 数据库连接 URL（由 MYSQL_HOST/MYSQL_PORT/MYSQL_DATABASE 拼装）
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:fitness}?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:21125211323}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # HikariCP 连接池
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 600000
+      leak-detection-threshold: 60000
+      # 强制每个连接的 MySQL 会话时区为 +08:00，确保 NOW() 返回上海时间，
+      # 与 MySQL 服务器全局 time_zone 是否为 UTC 无关（修复"已上架但用户不可见"）。
+      # 用偏移量 '+08:00' 而非命名时区，避免服务器未加载 mysql 时区表导致失败。
+      connection-init-sql: "SET time_zone = '+08:00'"
+
+  # ========== Redis 配置 ==========
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+        shutdown-timeout: 100ms
+
+  # ========== RabbitMQ 配置 ==========
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:admin123}
+    # 虚拟主机（默认 /）
+    virtual-host: ${RABBITMQ_VHOST:/}
+    # WebSocket STOMP 协议端口（当前 WS 使用内存代理，此端口为预留）
+    stomp:
+      port: 61613
+    # 消息可靠性配置
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    # 消息监听器配置
+    listener:
+      simple:
+        # 手动确认
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 5
+        max-concurrency: 20
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2
+          max-interval: 10000ms
+
+# ============================================
+# 业务配置
+# ============================================
+app:
+  membership:
+    # 固定为 0：严格按卡类型 duration_days 天计算，到期前 7 天/1 天投递提醒
+    # （分钟级测试逻辑已移除，代码不再读取此值，禁止改成正数）
+    test-expire-minutes: 0
+
+# ============================================
+# 人脸识别（prod 默认 SmartJavaAI 离线识别）
+# 模型由 DJL 自动下载，缓存在 data/ai-models 目录，后续离线运行。
+# FACE_MODE=baidu 时需同时注入百度密钥（见 application.yml 中环境变量）
+# ============================================
+face:
+  mode: ${FACE_MODE:smartjava}
+  smartjava:
+    similarity-threshold: 0.62
+    model-cache-path: data/ai-models
+
+# ============================================
+# Actuator 运维端点（仅暴露 health）
+# actuator 与主应用共用端口 8089，跟随主应用绑定到 127.0.0.1；
+# 公网访问由 Nginx 对 /actuator/ 返回 404 拦截（见 deploy/nginx/*.conf）。
+# 注意：不要单独配置 management.server.address 而不配 management.server.port，
+#       Spring Boot Actuator 不允许这种组合，会导致启动失败。
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      # 本机巡检需要看到 DB/Redis/RabbitMQ 分项状态；外部不可达
+      show-details: always
+      probes:
+        enabled: true

@@ -1,0 +1,9 @@
+springboot/data/ai-models/ 
+*.pt 
+*.dll 
+*.jar 
+springboot/data/ai-models/ 
+*.pt 
+*.dll 
+*.jar 
+*.log 

@@ -1,0 +1,29 @@
+{
+  "name": "vue3-fitness",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.1",
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "@stomp/stompjs": "^7.3.0",
+    "axios": "^1.20.0",
+    "pinia": "^4.0.3",
+    "sockjs-client": "^1.6.1",
+    "vue": "^3.5.42",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/sockjs-client": "^1.5.4",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2",
+    "vue-tsc": "^3.3.11"
+  }
+}
