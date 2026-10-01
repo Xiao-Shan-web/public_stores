@@ -41,7 +41,6 @@ mybatis:
   # MyBatis全局配置
   configuration:
     map-underscore-to-camel-case: true   # 开启驼峰命名自动映射：数据库字段 user_name → Java属性 userName
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发时显示SQL
 
 
 # JWT配置

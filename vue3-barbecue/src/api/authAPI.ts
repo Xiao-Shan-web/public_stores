@@ -38,7 +38,7 @@ export const authAPI = {
    * @param deviceId 设备标识符
    */
   getUserId: (deviceId: string) => {
-    return api.post(`/auth/${deviceId}`)
+    return api.get(`/auth/${deviceId}`)
   },
 
   /**

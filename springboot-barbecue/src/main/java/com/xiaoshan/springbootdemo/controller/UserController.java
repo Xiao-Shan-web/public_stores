@@ -34,7 +34,7 @@ public class UserController {
      * @param deviceId 设备唯一标识
      * @return 认证结果，包含用户ID
      */
-    @PostMapping("/auth/{deviceId}")
+    @GetMapping("/auth/{deviceId}")
     public ResponseEntity<?> deviceLogin(@PathVariable("deviceId") String deviceId) {
         try {
             Long userId = userService.getUserId(deviceId);
